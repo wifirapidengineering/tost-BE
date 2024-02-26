@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { updateOrderedProfiles } = require("../controllers/match.controller");
+const {
+  updateOrderedProfiles,
+  getMatches,
+} = require("../controllers/match.controller");
 
-router.post("/match", updateOrderedProfiles);
+router.post("/match/:profileId", updateOrderedProfiles);
+router.get("/match/:profileId", getMatches);
 
 module.exports = router;

@@ -29,9 +29,9 @@ model Profile {
   id             String           @id @default(cuid())
   userId         String           @unique
   hobbies        Hobby[]
-  bio            String
+  bio            String?
   gender         Gender?
-  dateOfBirth    DateTime
+  dateOfBirth    DateTime?
   profilePicture String?
   about          String?
   premium        Boolean          @default(false)
@@ -126,7 +126,7 @@ model Location {
 
 model Match {
   id         String    @id @default(cuid())
-  profile1Id String
+  profile1Id String   
   profile2Id String
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -159,8 +159,8 @@ model UserPreferences {
 }
 
 enum MatchType {
-  automatch
-  manualmatch
+  AUTOMATCH
+  MANUALMATCH
 }
 
 enum Gender {

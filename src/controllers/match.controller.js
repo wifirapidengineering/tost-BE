@@ -1,35 +1,25 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { ResponseHandler } = require("../utils/responseHandler");
-const {
-  performAutoMatching,
-  performManualMatching,
-} = require("../utils/matchingService.util");
+const { matching } = require("../utils/matchingService.util");
 
 const updateOrderedProfiles = async (req, res, next) => {
   try {
     const { profileId } = req.params;
-    const { orderedProfiles } = req.body; //list of 4 profileIds
+    const { matches } = req.body; // list of 4 profileIds
 
     // upsert the ordered profiles
-    const user = await prisma.profile.upsert({
-      where: { userId: profileId },
-      update: { orderedProfiles: { set: orderedProfiles } },
-      create: { userId: profileId, orderedProfiles },
+    const user = await prisma.profile.update({
+      where: { id: profileId },
+      data: { matches: { set: matches } },
     });
-
+    console.log("user", user);
     // Perform auto-matching
-    const autoMatches = await performAutoMatching(profileId, orderedProfiles);
-
-    // Perform manual matching
-    const manualMatches = await performManualMatching(
-      profileId,
-      orderedProfiles
-    );
+    const userMatches = await matching(user);
 
     ResponseHandler.success(
       res,
-      { orderedProfiles, autoMatches, manualMatches },
+      { userMatches },
       200,
       "Ordered profiles updated successfully"
     );
@@ -38,6 +28,76 @@ const updateOrderedProfiles = async (req, res, next) => {
   }
 };
 
+//get the matches for a specific user
+const getMatches = async (req, res, next) => {
+  try {
+    const { profileId } = req.params;
+
+    const matches = await prisma.match.findMany({
+      where: { OR: [{ profile1Id: profileId }, { profile2Id: profileId }] },
+      select: {
+        user1: {
+          select: {
+            user: { select: { firstName: true, lastName: true } },
+            profilePicture: true,
+            dateOfBirth: true,
+          },
+        },
+        user2: {
+          select: {
+            user: { select: { firstName: true, lastName: true } },
+            profilePicture: true,
+            dateOfBirth: true,
+          },
+        },
+      },
+    });
+    console.log("matches", matches);
+
+    const formattedMatches = matches.map((match) => {
+      const user1 = {
+        firstName: match.user1.user.firstName,
+        lastName: match.user1.user.lastName,
+        profilePicture: match.user1.profilePicture,
+        age: calculateAge(match.user1.dateOfBirth),
+      };
+      const user2 = {
+        firstName: match.user2.user.firstName,
+        lastName: match.user2.user.lastName,
+        profilePicture: match.user2.profilePicture,
+        age: calculateAge(match.user2.dateOfBirth),
+      };
+      return { user1, user2 };
+    });
+
+    ResponseHandler.success(
+      res,
+      { formattedMatches },
+      200,
+      "Matches retrieved successfully"
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+function calculateAge(dob) {
+  const currentDate = new Date();
+  const birthDate = new Date(dob);
+  let age = currentDate.getFullYear() - birthDate.getFullYear();
+
+  if (
+    currentDate.getMonth() < birthDate.getMonth() ||
+    (currentDate.getMonth() === birthDate.getMonth() &&
+      currentDate.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
+
+  return age;
+}
+
 module.exports = {
   updateOrderedProfiles,
+  getMatches,
 };
