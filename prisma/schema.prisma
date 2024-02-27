@@ -18,7 +18,7 @@ model User {
   updatedAt        DateTime  @updatedAt
   isArchived       Boolean   @default(false)
   isVerified       Boolean   @default(false)
-  receivedMessages Message[] @relation("Receiver")
+  receivedMessages Message[]
   sentMessages     Message[] @relation("Sender")
   otp              Otp?
   profile          Profile?
@@ -126,26 +126,23 @@ model Location {
 
 model Match {
   id         String    @id @default(cuid())
-  profile1Id String   
+  profile1Id String
   profile2Id String
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   user1      Profile   @relation("Match1", fields: [profile1Id], references: [id])
   user2      Profile   @relation("Match2", fields: [profile2Id], references: [id])
-  messages   Message[] @relation("MatchMessages")
   status     MatchType
 }
 
 model Message {
   id         String   @id @default(cuid())
-  matchId    String
   senderId   String
-  receiverId String
   message    String
+  read       Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  match      Match    @relation("MatchMessages", fields: [matchId], references: [id])
-  receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+  receiver   User[]
   sender     User     @relation("Sender", fields: [senderId], references: [id])
 }
 
