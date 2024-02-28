@@ -58,8 +58,9 @@ const handleChatMessages = (socket) => {
 };
 
 const handleReadReceipt = (socket) => {
-  socket.on("read-receipt", async (messageId) => {
+  socket.on("read-receipt", async (data) => {
     try {
+      const { messageId } = JSON.parse(data);
       const updatedMessage = await prisma.message.update({
         where: { id: messageId },
         data: { read: true },
