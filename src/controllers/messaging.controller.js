@@ -1,14 +1,14 @@
 const prisma = require("../utils/prisma");
+const io = require("../../index");
 const { ResponseHandler } = require("../utils/responseHandler");
 
 const handleConnection = (socket) => {
   console.log("a user connected");
 
   socket.on("connect-with-userId", (data) => {
-    console.log(`User connected with userId: ${data.userId}`);
-
-    const { userId } = data;
+    const { userId } = JSON.parse(data);
     socket.join(userId);
+    console.log(`User connected with userId: ${userId}`);
 
     // Handle chat messages
     handleChatMessages(socket);
@@ -41,7 +41,13 @@ const handleChatMessages = (socket) => {
       );
 
       receiverIds.forEach((receiverId, index) => {
+        console.log("connected", socket.connected);
+        console.log("rooms", socket.rooms);
         socket.to(receiverId).emit("new-message", savedMessages[index]);
+      });
+
+      socket.on("new-message", (data) => {
+        console.log("new-message", data);
       });
 
       socket.emit("message-sent", savedMessages);
