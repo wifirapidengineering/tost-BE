@@ -120,6 +120,10 @@ const login = async (req, res, next) => {
 
     delete user.password;
 
+    if(user.settings?.settings.twoFactorAuth){
+      awa
+    }
+
     ResponseHandler.success(res, user, 200, 'Login successful');
   } catch (error) {
     next(error);
