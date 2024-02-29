@@ -107,6 +107,7 @@ const login = async (req, res, next) => {
         profile: true,
         isVerified: true,
         isArchived: true,
+        settings: true,
       },
     });
     if (!user) {
