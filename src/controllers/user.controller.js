@@ -53,8 +53,6 @@ const getUserByIdorEmail = async (req, res, next) => {
   }
 };
 
-
-
 module.exports = {
   getAllUsers,
   getUserByIdorEmail,
