@@ -20,8 +20,6 @@ const createProfile = async (req, res, next) => {
     } = req.body;
     const userId = req.params.userId;
 
-    console.log(hobbies);
-
     await checkRequiredFields(req.body, {
       gender: "Gender",
       dob: "Date of Birth",
@@ -76,7 +74,6 @@ const createProfile = async (req, res, next) => {
         userId: userId,
       },
     });
-    console.log("profile", profile);
 
     ResponseHandler.success(res, profile, 201, "Profile created successfully");
   } catch (error) {
