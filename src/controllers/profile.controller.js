@@ -20,6 +20,8 @@ const createProfile = async (req, res, next) => {
     } = req.body;
     const userId = req.params.userId;
 
+    console.log(hobbies);
+
     await checkRequiredFields(req.body, {
       gender: "Gender",
       dob: "Date of Birth",
@@ -48,7 +50,7 @@ const createProfile = async (req, res, next) => {
       update: {
         gender,
         dateOfBirth: dob ? new Date(dob) : undefined,
-        hobbies: hobbies?.split(","),
+        hobbies: hobbies?.split(",").map((hobby) => hobby.trim().toUpperCase()),
         gallery: {
           create: uploadedPhotoUrls.urls?.map((photo) => ({
             url: photo.url,
@@ -62,7 +64,7 @@ const createProfile = async (req, res, next) => {
       create: {
         gender,
         dateOfBirth: new Date(dob),
-        hobbies: hobbies?.split(","),
+        hobbies: hobbies?.split(",").map((hobby) => hobby.trim().toUpperCase()),
         gallery: {
           create: uploadedPhotoUrls.urls?.map((photo) => ({
             url: photo.url,
@@ -74,6 +76,7 @@ const createProfile = async (req, res, next) => {
         userId: userId,
       },
     });
+    console.log("profile", profile);
 
     ResponseHandler.success(res, profile, 201, "Profile created successfully");
   } catch (error) {

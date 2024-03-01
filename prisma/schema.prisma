@@ -173,7 +173,6 @@ enum Gender {
   FEMALE
   OTHER
 }
-
 enum Hobby {
   SPORTS
   MUSIC
