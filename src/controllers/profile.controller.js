@@ -73,9 +73,32 @@ const createProfile = async (req, res, next) => {
         location: { create: location },
         userId: userId,
       },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            isArchived: true,
+            isVerified: true,
+          },
+        },
+        location: true,
+        gallery: true,
+      },
     });
 
-    ResponseHandler.success(res, profile, 201, "Profile created successfully");
+    const { user, ...profileWithoutUser } = profile;
+
+    ResponseHandler.success(res, {
+      timestamp: new Date().toISOString(),
+      success: true,
+      status: 201,
+      data: {
+        ...profileWithoutUser,
+        user,
+      },
+      message: "Profile created successfully",
+    });
   } catch (error) {
     next(error);
   }
