@@ -120,8 +120,16 @@ const login = async (req, res, next) => {
 
     delete user.password;
 
-    if(user.settings?.settings.twoFactorAuth){
-      awa
+    if (user.settings?.twoFactorAuth) {
+      const emailResponse = await sendOtpEmail(
+        user,
+        await generateOTP(user.id),
+        'login'
+      );
+      if (!emailResponse) {
+        throw new InternalServerError('Error sending otp');
+      }
+      ResponseHandler.success(res, user, 200, 'OTP sent successfully');
     }
 
     ResponseHandler.success(res, user, 200, 'Login successful');

@@ -83,21 +83,18 @@ model UserSettings {
 
 model AppSettings {
   id            String   @id @default(cuid())
-  termsOfUse    String
-  privacyPolicy String
+  termsOfUse    String?
+  privacyPolicy String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  faq           Faq[]
 }
 
 model Faq {
-  id         String      @id @default(cuid())
-  settingsId String
-  question   String
-  answer     String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  settings   AppSettings @relation(fields: [settingsId], references: [id])
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Otp {
