@@ -48,7 +48,7 @@ const createProfile = async (req, res, next) => {
       update: {
         gender,
         dateOfBirth: dob ? new Date(dob) : undefined,
-        hobbies: hobbies?.split(","),
+        hobbies: hobbies?.split(",").map((hobby) => hobby.trim().toUpperCase()),
         gallery: {
           create: uploadedPhotoUrls.urls?.map((photo) => ({
             url: photo.url,
@@ -62,7 +62,7 @@ const createProfile = async (req, res, next) => {
       create: {
         gender,
         dateOfBirth: new Date(dob),
-        hobbies: hobbies?.split(","),
+        hobbies: hobbies?.split(",").map((hobby) => hobby.trim().toUpperCase()),
         gallery: {
           create: uploadedPhotoUrls.urls?.map((photo) => ({
             url: photo.url,
@@ -73,9 +73,32 @@ const createProfile = async (req, res, next) => {
         location: { create: location },
         userId: userId,
       },
+      include: {
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            isArchived: true,
+            isVerified: true,
+          },
+        },
+        location: true,
+        gallery: true,
+      },
     });
 
-    ResponseHandler.success(res, profile, 201, "Profile created successfully");
+    const { user, ...profileWithoutUser } = profile;
+
+    ResponseHandler.success(res, {
+      timestamp: new Date().toISOString(),
+      success: true,
+      status: 201,
+      data: {
+        ...profileWithoutUser,
+        user,
+      },
+      message: "Profile created successfully",
+    });
   } catch (error) {
     next(error);
   }

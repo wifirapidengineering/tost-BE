@@ -170,7 +170,6 @@ enum Gender {
   FEMALE
   OTHER
 }
-
 enum Hobby {
   SPORTS
   MUSIC
@@ -198,7 +197,7 @@ enum Hobby {
   POLITICS
   RELIGION
   CRAFTS
-  DRINKING
+  DRINK
   GARDENING
   ANIMALS
   NATURE
