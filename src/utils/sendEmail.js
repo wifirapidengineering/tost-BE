@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const { veificationtemplate } = require('./emailtemplates/verification');
 const { passwordtemplate } = require('./emailtemplates/password');
+const { logintemplate } = require('./emailtemplates/login');
 require('dotenv').config();
 const {
   BadRequestError,
@@ -21,7 +22,7 @@ let transporter = nodemailer.createTransport({
 const sendEmail = async (email, subject, html) => {
   try {
     let info = await transporter.sendMail({
-      from: process.env.EMAIL,
+      from: `"Tost" <${process.env.EMAIL}>`,
       to: email,
       subject: subject,
       html: html,
@@ -51,12 +52,18 @@ const sendOtpEmail = async (user, otp, type) => {
     html = veificationtemplate
       .replace('{{otp}}', otp)
       .replace('{{username}}', user.firstName);
+  else if (type === 'login')
+    html = logintemplate
+      .replace('{{otp}}', otp)
+      .replace('{{username}}', user.firstName);
   else throw new BadRequestError('Check type of OTP requested');
   const subject =
     type === 'password'
       ? 'Tost Password Reset OTP'
       : type === 'verification'
       ? 'Tost Account Verification OTP'
+      : type === 'login'
+      ? 'Tost Login OTP'
       : 'Tost OTP';
   return sendEmail(user.email, subject, html);
 };
