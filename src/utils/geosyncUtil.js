@@ -16,28 +16,19 @@ const matching = async (user) => {
       },
     });
 
-    // Iterate through profiles
     for (const profile of profiles) {
-      // Find the corresponding match for the current profile
       const correspondingMatch = profiles.find((p) => p.matches[0] === user.id);
-
-      // Check if the current profile is the No.1 match for the user
       const isNo1MatchForUser = profile.matches[0] === user.id;
-
-      // Check if the user is the No.1 match for the current profile
       const isUserNo1Match = user.matches[0] === profile.id;
 
-      // Check if it's an automatch
       const isAutoMatch =
         isNo1MatchForUser && isUserNo1Match && correspondingMatch;
 
-      // Check if it's a manual match
       const isManualMatch =
         !isAutoMatch &&
         user.matches.includes(profile.id) &&
         profile.matches.includes(user.id);
 
-      // If it's an automatch, add the pair to autoMatches
       if (isAutoMatch) {
         autoMatches.push({
           profile1Id: profile.id,
@@ -53,7 +44,6 @@ const matching = async (user) => {
         });
       }
 
-      // If it's a manual match, add the pair to manualMatches
       if (isManualMatch) {
         manualMatches.push({
           profile1Id: profile.id,

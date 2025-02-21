@@ -1,7 +1,5 @@
 const prisma = require("./prisma");
-const KDBush = require("../utils/kdbush");
-
-//find users with a specific location range
+const KDBush = require("../utils/geosync");
 
 async function findUsersInRangeKdTree(centerLat, centerLon, maxDistance) {
   const users = await prisma.user.findMany({
@@ -30,8 +28,6 @@ async function findUsersInRangeKdTree(centerLat, centerLon, maxDistance) {
     parseFloat(user?.profile?.location?.longitude),
   ]);
 
-  // Create a KD-tree from the user coordinates
-
   const userKdTree = new KDBush(users.length);
 
   for (const [index, userCoordinate] of userCoordinates.entries()) {
@@ -41,14 +37,12 @@ async function findUsersInRangeKdTree(centerLat, centerLon, maxDistance) {
   userKdTree.finish();
 
   const centerCoordinates = [centerLat, centerLon];
-  // Query the KD-tree for users within the specified distance
   const usersWithinRangeIndices = userKdTree.within(
     centerLat,
     centerLon,
     maxDistance
   );
 
-  // Get the actual user objects based on the indices
   const usersWithinRange = usersWithinRangeIndices.map((index) => users[index]);
 
   const usersWithAge = usersWithinRange.map((user) => ({
@@ -67,7 +61,6 @@ function calculateAge(dob) {
   const birthDate = new Date(dob);
   let age = currentDate.getFullYear() - birthDate.getFullYear();
 
-  // Adjust age based on the month and day
   if (
     currentDate.getMonth() < birthDate.getMonth() ||
     (currentDate.getMonth() === birthDate.getMonth() &&

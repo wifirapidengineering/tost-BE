@@ -1,6 +1,6 @@
 const prisma = require("../utils/prisma");
 const { ResponseHandler } = require("../utils/responseHandler");
-const { matching } = require("../utils/matchingService.util");
+const { matching } = require("../utils/geosyncUtil");
 
 const updateOrderedProfiles = async (req, res, next) => {
   try {

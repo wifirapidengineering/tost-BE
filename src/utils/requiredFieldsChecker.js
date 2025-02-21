@@ -1,6 +1,5 @@
 const { BadRequestError } = require("../middlewares/errorhandler.middleware");
 
-// This utility function checks if all required fields are present in the data object
 const checkRequiredFields = async (data, fieldDisplayNames) => {
   const requiredFields = Object.keys(fieldDisplayNames);
   const missingFields = requiredFields.filter((field) => !data[field]);

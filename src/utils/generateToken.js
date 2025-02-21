@@ -1,10 +1,9 @@
-const jwt = require('jsonwebtoken');
-const prisma = require('./prisma');
+const jwt = require("jsonwebtoken");
+const prisma = require("./prisma");
 
-//Generate jwt tke from user Id
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: '1h',
+    expiresIn: "1h",
   });
 };
 
@@ -12,7 +11,6 @@ const validateToken = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-//generate 4 digit otp
 const generateOTP = async (userId) => {
   const secret = Math.floor(1000 + Math.random() * 9000);
   const user = await prisma.user.findUnique({
@@ -21,7 +19,7 @@ const generateOTP = async (userId) => {
     },
   });
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
   const savedOtp = await prisma.otp.upsert({
     where: {
@@ -36,12 +34,11 @@ const generateOTP = async (userId) => {
     },
   });
   if (!savedOtp) {
-    throw new Error('Error saving otp');
+    throw new Error("Error saving otp");
   }
   return secret;
 };
 
-//delete otp after verification or after 30mins
 const deleteOTP = async (userId) => {
   const deletedOtp = await prisma.otp.delete({
     where: {
@@ -49,7 +46,7 @@ const deleteOTP = async (userId) => {
     },
   });
   if (!deletedOtp) {
-    throw new Error('Error deleting otp');
+    throw new Error("Error deleting otp");
   }
   return true;
 };
